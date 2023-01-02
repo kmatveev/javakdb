@@ -897,11 +897,12 @@ public class c{
    * @throws UnsupportedEncodingException If there is an issue with the registed encoding
    */
   void w(String s) throws UnsupportedEncodingException{
-    if(s!=null){
-      int byteLen=ns(s);
+    if(s!=null && !s.isEmpty()){
       byte[] bytes=s.getBytes(encoding);
-      for(int idx=0;idx<byteLen;idx++)
+      for(int idx=0;idx<bytes.length;idx++) {
+        if (bytes[idx] == 0) break;
         w(bytes[idx]);
+      }
     }
     wBuff[wBuffPos++]=0;
   }
@@ -1174,7 +1175,7 @@ public class c{
    */
   static int ns(String s) throws UnsupportedEncodingException{
     int i;
-    if(s==null)
+    if(s==null || s.isEmpty())
       return 0;
     if(-1<(i=s.indexOf('\000')))
       s=s.substring(0,i);
@@ -1193,7 +1194,7 @@ public class c{
       return n(((Dict)x).x);
     if (x instanceof Flip)
       return n(((Flip)x).y[0]);
-    return x instanceof char[]?new String((char[])x).getBytes(encoding).length:Array.getLength(x);
+    return x instanceof char[]?(Array.getLength(x) > 0 ? new String((char[])x).getBytes(encoding).length : 0):Array.getLength(x);
   }
   /**
    * Calculates the number of bytes which would be required to serialize the supplied object.
@@ -1302,46 +1303,72 @@ public class c{
     n=n(x);
     w(n);
     if(type==10){
-      byte[] b=new String((char[])x).getBytes(encoding);
-      while(i<b.length)
-        w(b[i++]);
+      char[] cx = (char[])x;
+      if (cx.length > 0) {
+        byte[] b = new String(cx).getBytes(encoding);
+        while (i < b.length)
+          w(b[i++]);
+      }
     }else
-      for(;i<n;++i)
-        if(type==0)
+      if(type==0)
+        for(;i<n;++i)
           w(((Object[])x)[i]);
-        else if(type==1)
+      else if(type==1)
+        for(;i<n;++i)
           w(((boolean[])x)[i]);
-        else if(type==2)
+      else if(type==2)
+        for(;i<n;++i)
           w(((UUID[])x)[i]);
-        else if(type==4)
+      else if(type==4)
+        for(;i<n;++i)
           w(((byte[])x)[i]);
-        else if(type==5)
-          w(((short[])x)[i]);
-        else if(type==6)
-          w(((int[])x)[i]);
-        else if(type==7)
-          w(((long[])x)[i]);
-        else if(type==8)
-          w(((float[])x)[i]);
-        else if(type==9)
-          w(((double[])x)[i]);
-        else if(type==11)
+      else if(type==5) {
+        short[] sx = (short[]) x;
+        for (; i < n; ++i) {
+          w(sx[i]);
+        }
+      } else if(type==6) {
+        int[] ix = (int[])x;
+        for (; i < n; ++i)
+          w(ix[i]);
+      } else if(type==7) {
+        long[] lx = (long[]) x;
+        for (; i < n; ++i)
+          w(lx[i]);
+      } else if(type==8) {
+        float[] fx = (float[]) x;
+        for (; i < n; ++i)
+          w(fx[i]);
+      } else if(type==9) {
+        double[] dx = (double[]) x;
+        for (; i < n; ++i)
+          w(dx[i]);
+      } else if(type==11)
+        for(;i<n;++i)
           w(((String[])x)[i]);
-        else if(type==12)
+      else if(type==12)
+        for(;i<n;++i)
           w(((Instant[])x)[i]);
-        else if(type==13)
+      else if(type==13)
+        for(;i<n;++i)
           w(((Month[])x)[i]);
-        else if(type==14)
+      else if(type==14)
+        for(;i<n;++i)
           w(((LocalDate[])x)[i]);
-        else if(type==15)
+      else if(type==15)
+        for(;i<n;++i)
           w(((LocalDateTime[])x)[i]);
-        else if(type==16)
+      else if(type==16)
+        for(;i<n;++i)
           w(((Timespan[])x)[i]);
-        else if(type==17)
+      else if(type==17)
+        for(;i<n;++i)
           w(((Minute[])x)[i]);
-        else if(type==18)
+      else if(type==18)
+        for(;i<n;++i)
           w(((Second[])x)[i]);
-        else
+      else
+        for(;i<n;++i)
           w(((LocalTime[])x)[i]);
   }
 
